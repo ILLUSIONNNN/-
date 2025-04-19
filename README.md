@@ -1,2 +1,5 @@
-# -
+api接口全部在program中
+所有数据都在本地的alldata中，不使用数据库
+wwwroot中存放网页文件
+model中存放各个类
 吉林大学.net大作业
