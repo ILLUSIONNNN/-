@@ -1,0 +1,216 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报名活动</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .activity-table-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .activity-table th, .activity-table td {
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+
+            .activity-table th {
+                background-color: #007BFF;
+                color: white;
+                font-weight: bold;
+            }
+
+            .activity-table tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            .activity-table tr:hover {
+                background-color: #f1f1f1;
+            }
+
+        .no-data {
+            text-align: center;
+            color: #555;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .signup-form-container {
+            max-width: 400px;
+            margin: 30px auto 0 auto;
+            background: #fff;
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.07);
+            text-align: center;
+        }
+
+            .signup-form-container input {
+                width: 80%;
+                padding: 8px;
+                margin-bottom: 12px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 16px;
+            }
+
+            .signup-form-container button {
+                width: 85%;
+                padding: 10px;
+                background: #007BFF;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                font-size: 17px;
+                cursor: pointer;
+            }
+
+                .signup-form-container button:hover {
+                    background: #0056b3;
+                }
+    </style>
+</head>
+<body>
+    <h1>报名活动</h1>
+    <div class="activity-table-container">
+        <table class="activity-table" id="activity-table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>标题</th>
+                    <th>日期</th>
+                    <th>地点</th>
+                    <th>描述</th>
+                    <th>状态</th>
+                    <th>创建者邮箱</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 活动数据将动态加载到这里 -->
+            </tbody>
+        </table>
+        <div class="no-data" id="no-data" style="display: none;">没有活动数据可显示。</div>
+    </div>
+
+    <div class="signup-form-container">
+        <h2>输入活动序号报名</h2>
+        <input type="number" id="activity-id-input" placeholder="活动序号" min="1" required>
+        <input type="email" id="user-email-input" placeholder="请输入您的邮箱" required>
+        <button onclick="signupActivity()">报名</button>
+        <div style="margin-top: 10px; color: #888; font-size: 14px;">
+            报名后需等待管理员审核，审核通过后才算报名成功。
+        </div>
+    </div>
+
+    <script>
+        let activities = [];
+
+        async function loadActivities() {
+            try {
+                const response = await fetch('/activities');
+                const result = await response.json();
+                const activityTable = document.getElementById('activity-table').querySelector('tbody');
+                const noDataMessage = document.getElementById('no-data');
+
+                if (!result.success || result.data.length === 0) {
+                    noDataMessage.style.display = 'block';
+                    return;
+                }
+
+                noDataMessage.style.display = 'none';
+                activityTable.innerHTML = '';
+                activities = result.data; // 保存活动数据
+
+                result.data.forEach(activity => {
+                    // 兼容字段名
+                    const id = activity.Id || activity.id;
+                    const title = activity.Name || activity.Title || activity.name || activity.title;
+                    const eventTime = activity.EventTime || activity.eventTime;
+                    const location = activity.Location || activity.location;
+                    const description = activity.Description || activity.description;
+                    const status = activity.Status || activity.status;
+                    const creatorEmail = activity.CreatorEmail || activity.creatorEmail;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td>${id}</td>
+                            <td>${title}</td>
+                            <td>${new Date(eventTime).toLocaleString()}</td>
+                            <td>${location}</td>
+                            <td>${description}</td>
+                            <td>${status}</td>
+                            <td>${creatorEmail}</td>
+                        `;
+                    activityTable.appendChild(row);
+                });
+            } catch (error) {
+                alert("加载活动数据失败，请稍后再试！");
+            }
+        }
+
+        async function signupActivity() {
+            const activityId = Number(document.getElementById('activity-id-input').value);
+            const userEmail = document.getElementById('user-email-input').value.trim();
+
+            if (!activityId || !userEmail) {
+                alert("请填写活动序号和您的邮箱！");
+                return;
+            }
+
+            // 查找活动名称
+            const activity = activities.find(a => (a.Id || a.id) === activityId);
+            if (!activity) {
+                alert("未找到该活动，请确认序号输入正确！");
+                return;
+            }
+
+            // 构造报名数据
+            const registration = {
+                ActivityId: activityId,
+                ActivityName: activity.Name || activity.Title || activity.name || activity.title,
+                UserEmail: userEmail,
+                Status: "pending",
+                AppliedAt: new Date().toISOString()
+            };
+
+            // 提交到后端
+            try {
+                const response = await fetch('/register_activity', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(registration)
+                });
+                const result = await response.json();
+                alert(result.message || "报名已提交，等待管理员审核。");
+            } catch (err) {
+                alert("报名失败，请稍后再试！");
+            }
+        }
+
+        window.onload = loadActivities;
+    </script>
+</body>
+</html>

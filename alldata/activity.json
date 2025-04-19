@@ -1,0 +1,47 @@
+[
+  {
+    "Id": 1,
+    "Title": "2025 Spring Festival",
+    "EventTime": "2025-04-20T19:00:00+08:00",
+    "Location": "Main Halls",
+    "Description": "A celebration for the new semester.",
+    "Status": "published",
+    "CreatorEmail": "xiedh5522@mails.jlu.edu.cn"
+  },
+  {
+    "Id": 2,
+    "Title": "Tech Workshop",
+    "EventTime": "2025-04-25T14:00:00+08:00",
+    "Location": "Room 203",
+    "Description": "A hands-on workshop on modern web technologies.",
+    "Status": "published",
+    "CreatorEmail": "lucyli@mails.jlu.edu.cn"
+  },
+  {
+    "Id": 3,
+    "Title": "Art Exhibition",
+    "EventTime": "2025-05-05T10:00:00+08:00",
+    "Location": "Art Gallery",
+    "Description": "Showcasing student art works.",
+    "Status": "published",
+    "CreatorEmail": "xxx@mails.jlu.edu.cn"
+  },
+  {
+    "Id": 4,
+    "Title": "Sports Day",
+    "EventTime": "2025-05-10T09:00:00+08:00",
+    "Location": "Stadium",
+    "Description": "Annual inter-club sports competition.",
+    "Status": "published",
+    "CreatorEmail": "xiedh5522@mails.jlu.edu.cn"
+  },
+  {
+    "Id": 5,
+    "Title": "Coding Challenge",
+    "EventTime": "2025-05-15T13:00:00+08:00",
+    "Location": "Lab 1",
+    "Description": "Solve problems and win prizes.",
+    "Status": "published",
+    "CreatorEmail": "lucyli@mails.jlu.edu.cn"
+  }
+]

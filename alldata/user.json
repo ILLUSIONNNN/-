@@ -1,0 +1,50 @@
+[
+  {
+    "Username": "admin",
+    "Password": "123",
+    "Email": "xiedh5522@mails.jlu.edu.cn",
+    "Name": "Xie dh",
+    "Role": "admin",
+    "CreatedAt": "2025-04-01T10:00:00"
+  },
+  {
+    "Username": "lucy",
+    "Password": "user123",
+    "Email": "lucyli@mails.jlu.edu.cn",
+    "Name": "Lucy Li",
+    "Role": "user",
+    "CreatedAt": "2025-04-05T15:30:00"
+  },
+  {
+    "Username": "123456",
+    "Password": "123",
+    "Email": "xxx@mails.jlu.edu.cn",
+    "Name": "xxx",
+    "Role": "user",
+    "CreatedAt": "2025-04-19T20:07:46.9322184+08:00"
+  },
+  {
+    "Username": "james",
+    "Password": "jamespw",
+    "Email": "james@mails.jlu.edu.cn",
+    "Name": "James Wang",
+    "Role": "user",
+    "CreatedAt": "2025-04-12T11:00:00"
+  },
+  {
+    "Username": "alice",
+    "Password": "alicepw",
+    "Email": "alice@mails.jlu.edu.cn",
+    "Name": "Alice Chen",
+    "Role": "user",
+    "CreatedAt": "2025-04-14T08:00:00"
+  },
+  {
+    "Username": "333",
+    "Password": "123",
+    "Email": "ttt@mails.jlu.edu.cn",
+    "Name": "ttt",
+    "Role": "user",
+    "CreatedAt": "2025-04-19T22:51:11.9857628+08:00"
+  }
+]

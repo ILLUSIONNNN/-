@@ -1,0 +1,58 @@
+[
+  {
+    "Id": 1,
+    "Content": "Your registration for \u00272025 Spring Festival\u0027 is pending.",
+    "RecipientEmail": "lucyli@mails.jlu.edu.cn",
+    "IsRead": false,
+    "CreatedAt": "2025-04-10T09:30:00"
+  },
+  {
+    "Id": 2,
+    "Content": "Your registration for \u0027Tech Workshop\u0027 has been approved.",
+    "RecipientEmail": "xiedh5522@mails.jlu.edu.cn",
+    "IsRead": true,
+    "CreatedAt": "2025-04-15T15:00:00"
+  },
+  {
+    "Id": 3,
+    "Content": "\u60A8\u62A5\u540D\u7684\u6D3B\u52A8\u30102025 Spring Festival\u3011\u5DF2\u901A\u8FC7\u5BA1\u6838\uFF0C\u6B22\u8FCE\u53C2\u52A0\uFF01",
+    "RecipientEmail": "xiedh5522@mails.jlu.edu.cn",
+    "IsRead": true,
+    "CreatedAt": "2025-04-19T21:32:50.5562233+08:00"
+  },
+  {
+    "Id": 4,
+    "Content": "Your registration for \u0027Art Exhibition\u0027 is pending.",
+    "RecipientEmail": "alice@mails.jlu.edu.cn",
+    "IsRead": false,
+    "CreatedAt": "2025-04-18T10:32:00"
+  },
+  {
+    "Id": 5,
+    "Content": "Your registration for \u0027Sports Day\u0027 is pending.",
+    "RecipientEmail": "james@mails.jlu.edu.cn",
+    "IsRead": false,
+    "CreatedAt": "2025-04-17T17:00:00"
+  },
+  {
+    "Id": 6,
+    "Content": "Your registration for \u0027Tech Workshop\u0027 was rejected.",
+    "RecipientEmail": "alice@mails.jlu.edu.cn",
+    "IsRead": true,
+    "CreatedAt": "2025-04-19T12:10:00"
+  },
+  {
+    "Id": 7,
+    "Content": "Your registration for \u0027Coding Challenge\u0027 is pending.",
+    "RecipientEmail": "lucyli@mails.jlu.edu.cn",
+    "IsRead": false,
+    "CreatedAt": "2025-04-19T12:00:00"
+  },
+  {
+    "Id": 8,
+    "Content": "\u60A8\u62A5\u540D\u7684\u6D3B\u52A8\u3010Art Exhibition\u3011\u5DF2\u901A\u8FC7\u5BA1\u6838\uFF0C\u6B22\u8FCE\u53C2\u52A0\uFF01",
+    "RecipientEmail": "alice@mails.jlu.edu.cn",
+    "IsRead": false,
+    "CreatedAt": "2025-04-19T22:49:14.3671756+08:00"
+  }
+]
