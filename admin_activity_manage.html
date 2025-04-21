@@ -1,0 +1,314 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建/编辑活动</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f6f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 36px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px #0001;
+            padding: 36px 30px 30px 30px;
+        }
+
+        h1 {
+            color: #007BFF;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 28px;
+        }
+
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 10px 6px;
+            text-align: center;
+        }
+
+        th {
+            background: #007BFF;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .action-btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 3px;
+            font-size: 15px;
+        }
+
+        .edit-btn {
+            background: #ffc107;
+            color: #222;
+        }
+
+            .edit-btn:hover {
+                background: #e0a800;
+            }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+            .delete-btn:hover {
+                background: #b13223;
+            }
+
+        .add-btn {
+            background: #007BFF;
+            color: #fff;
+            margin-bottom: 20px;
+            padding: 10px 24px;
+            font-size: 16px;
+        }
+
+            .add-btn:hover {
+                background: #0056b3;
+            }
+
+        .form-section {
+            border-top: 1px solid #e0e0e0;
+            margin-top: 22px;
+            padding-top: 20px;
+        }
+
+            .form-section label {
+                display: block;
+                margin: 10px 0 6px 0;
+                font-size: 15px;
+                text-align: left;
+            }
+
+            .form-section input, .form-section textarea {
+                width: 100%;
+                padding: 8px;
+                margin-bottom: 10px;
+                border-radius: 4px;
+                border: 1px solid #ccc;
+                font-size: 15px;
+            }
+
+            .form-section textarea {
+                resize: vertical;
+                min-height: 60px;
+            }
+
+            .form-section .form-btns {
+                text-align: right;
+            }
+
+            .form-section button {
+                margin-left: 12px;
+            }
+
+        .back-btn {
+            margin-top: 18px;
+            background: #aaa;
+            color: #fff;
+        }
+
+            .back-btn:hover {
+                background: #666;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>活动管理</h1>
+        <button class="add-btn" onclick="showCreateForm()">+ 创建新活动</button>
+        <table id="activity-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>活动名称</th>
+                    <th>时间</th>
+                    <th>地点</th>
+                    <th>描述</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 活动列表数据插入 -->
+            </tbody>
+        </table>
+
+        <div class="form-section" id="activity-form-section" style="display:none;">
+            <h2 id="form-title">创建活动</h2>
+            <label for="form-name">活动名称</label>
+            <input type="text" id="form-name" placeholder="请输入活动名称">
+            <label for="form-time">活动时间</label>
+            <input type="datetime-local" id="form-time">
+            <label for="form-location">活动地点</label>
+            <input type="text" id="form-location" placeholder="请输入地点">
+            <label for="form-description">活动描述</label>
+            <textarea id="form-description" placeholder="简要描述活动"></textarea>
+            <label for="form-status">活动状态</label>
+            <input type="text" id="form-status" placeholder="如：未开始、进行中、已结束">
+
+            <div class="form-btns">
+                <button class="action-btn" onclick="submitActivity()" id="submit-btn">提交</button>
+                <button class="action-btn back-btn" onclick="hideForm()">取消</button>
+            </div>
+        </div>
+    </div>
+    <script>let activities = [];
+        let editingId = null;
+
+        // 1. 加载全部活动
+        async function loadActivities() {
+            const resp = await fetch('/activities');
+            const result = await resp.json();
+            if (result.success) {
+                activities = result.data;
+                renderTable();
+            } else {
+                alert("获取活动列表失败！");
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.querySelector("#activity-table tbody");
+            tbody.innerHTML = "";
+            if (!activities.length) {
+                tbody.innerHTML = `<tr><td colspan="7">暂无活动</td></tr>`;
+                return;
+            }
+            activities.forEach(act => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${act.id}</td>
+                        <td>${act.name}</td>
+                        <td>${act.eventTime ? new Date(act.eventTime).toLocaleString() : ""}</td>
+                        <td>${act.location || ""}</td>
+                        <td>${act.description || ""}</td>
+                        <td>${act.status || ""}</td>
+                        <td>
+                            <button class="action-btn edit-btn" onclick="editActivity(${act.id})">编辑</button>
+                            <button class="action-btn delete-btn" onclick="deleteActivity(${act.id})">删除</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // 2. 显示创建表单
+        function showCreateForm() {
+            editingId = null;
+            document.getElementById('form-title').textContent = "创建活动";
+            document.getElementById('form-name').value = "";
+            document.getElementById('form-time').value = "";
+            document.getElementById('form-location').value = "";
+            document.getElementById('form-description').value = "";
+            document.getElementById('form-status').value = "";
+            document.getElementById('activity-form-section').style.display = "";
+        }
+
+        // 3. 显示编辑表单
+        function editActivity(id) {
+            const act = activities.find(a => a.id === id);
+            if (!act) return alert("活动不存在！");
+            editingId = id;
+            document.getElementById('form-title').textContent = "编辑活动";
+            document.getElementById('form-name').value = act.name || "";
+            document.getElementById('form-time').value = act.eventTime ? toInputDateTime(act.eventTime) : "";
+            document.getElementById('form-location').value = act.location || "";
+            document.getElementById('form-description').value = act.description || "";
+            document.getElementById('form-status').value = act.status || "";
+            document.getElementById('activity-form-section').style.display = "";
+        }
+        function toInputDateTime(dt) {
+            // 兼容ISO字符串或Date对象
+            const d = new Date(dt);
+            const pad = n => n < 10 ? "0"+n : n;
+            return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
+
+        // 4. 隐藏表单
+        function hideForm() {
+            document.getElementById('activity-form-section').style.display = "none";
+        }
+
+        // 5. 创建或编辑提交
+        async function submitActivity() {
+            const name = document.getElementById('form-name').value.trim();
+            const time = document.getElementById('form-time').value;
+            const location = document.getElementById('form-location').value.trim();
+            const description = document.getElementById('form-description').value.trim();
+            const status = document.getElementById('form-status').value.trim() || "未开始";
+
+            if (!name || !time || !location) {
+                alert("请填写完整信息（活动名称、时间、地点）！");
+                return;
+            }
+
+            const payload = {
+                Name: name,
+                EventTime: new Date(time).toISOString(),
+                Location: location,
+                Description: description,
+                Status: status
+            };
+
+            let url, method;
+            if (editingId) {
+                // 编辑
+                url = `/edit_activity`;
+                method = "POST";
+                payload.Id = editingId;
+            } else {
+                // 新建
+                url = `/add_activity`;
+                method = "POST";
+            }
+
+            const resp = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await resp.json();
+            alert(result.message);
+            if (result.success) {
+                hideForm();
+                loadActivities();
+            }
+        }
+
+        // 6. 删除活动
+        async function deleteActivity(id) {
+            if (!confirm("确定要删除该活动吗？")) return;
+            const resp = await fetch(`/delete_activity`, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Id: id })
+            });
+            const result = await resp.json();
+            alert(result.message);
+            if (result.success) loadActivities();
+        }
+
+        // 初始加载
+        loadActivities();</script>
+</body>
+</html>
