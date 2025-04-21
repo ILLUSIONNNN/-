@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社团管理系统</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f3faff 0%, #e5eaff 100%);
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 32px rgba(0,0,0,0.08), 0 1.5px 7.5px rgba(0,0,0,0.06);
+            padding: 40px 32px 32px 32px;
+            text-align: center;
+            min-width: 320px;
+            max-width: 95vw;
+            margin: 24px;
+        }
+
+        h1 {
+            color: #2d5be3;
+            letter-spacing: 2px;
+            font-size: 2.2rem;
+            margin-bottom: 16px;
+        }
+
+        p {
+            color: #444;
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+
+        .main-btn {
+            background: linear-gradient(90deg, #3d7bfd 60%, #30d7fe 100%);
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 36px;
+            box-shadow: 0 2px 8px rgba(61, 123, 253, 0.11);
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.15s;
+            outline: none;
+        }
+
+            .main-btn:hover {
+                background: linear-gradient(90deg, #246bf7 60%, #1bc7ee 100%);
+                box-shadow: 0 4px 16px rgba(61, 123, 253, 0.13);
+            }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 18px 5vw 22px 5vw;
+                min-width: unset;
+            }
+
+            h1 {
+                font-size: 1.35rem;
+            }
+
+            .main-btn {
+                padding: 11px 0;
+                width: 100%;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>欢迎来到社团管理系统</h1>
+        <p>点击开始使用即可进入系统。</p>
+        <button class="main-btn" onclick="goToLogin()">开始使用</button>
+    </div>
+    <script>
+        function goToLogin() {
+            // 跳转到 login.html 页面
+            window.location.href = '/login.html';
+        }
+    </script>
+</body>
+</html>

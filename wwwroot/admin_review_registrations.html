@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>审核报名申请</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f6f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px #0001;
+            padding: 32px 18px 24px 18px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007BFF;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+        }
+
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 8px 6px;
+            text-align: center;
+        }
+
+        th {
+            background: #007BFF;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .approve-btn, .reject-btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+            margin: 0 2px;
+        }
+
+        .approve-btn {
+            background: #28a745;
+            color: #fff;
+        }
+
+            .approve-btn:hover {
+                background: #218838;
+            }
+
+        .reject-btn {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+            .reject-btn:hover {
+                background: #b13223;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>审核报名申请</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>报名ID</th>
+                    <th>活动名称</th>
+                    <th>用户邮箱</th>
+                    <th>报名时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="reg-table">
+                <!-- 报名数据将动态加载到这里 -->
+            </tbody>
+        </table>
+    </div>
+    <script>async function loadRegistrations() {
+            const resp = await fetch('/all_registrations');
+            const result = await resp.json();
+            const regTable = document.getElementById('reg-table');
+            regTable.innerHTML = '';
+            if (!result.success || !result.data || result.data.length === 0) {
+                regTable.innerHTML = `<tr><td colspan="6">暂无报名待审核</td></tr>`;
+                return;
+            }
+
+            result.data.forEach(reg => {
+                // 兼容字段名
+                const id = reg.Id || reg.id;
+                const activityName = reg.ActivityName || reg.activityName;
+                const userEmail = reg.UserEmail || reg.userEmail;
+                const appliedAt = reg.AppliedAt || reg.appliedAt;
+                const status = reg.Status || reg.status;
+
+                let actionBtns = '';
+                if (status === "pending") {
+                    actionBtns = `
+                        <button class="approve-btn" onclick="reviewRegistration(${id},'approved')">通过</button>
+                        <button class="reject-btn" onclick="reviewRegistration(${id},'rejected')">拒绝</button>
+                    `;
+                }
+
+                regTable.innerHTML += `
+                    <tr>
+                        <td>${id}</td>
+                        <td>${activityName}</td>
+                        <td>${userEmail}</td>
+                        <td>${new Date(appliedAt).toLocaleString()}</td>
+                        <td>${status === "pending" ? "待审核" : (status === "approved" ? "已通过" : "已拒绝")}</td>
+                        <td>${actionBtns}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function reviewRegistration(id, status) {
+            if (!confirm(`确定要${status === 'approved' ? '通过' : '拒绝'}该报名吗？`)) return;
+            const resp = await fetch('/review_registration', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Id: id, Status: status })
+            });
+            const result = await resp.json();
+            alert(result.message);
+            loadRegistrations();
+        }
+
+        window.onload = loadRegistrations;</script>
+</body>
+</html>
