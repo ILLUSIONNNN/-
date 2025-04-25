@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>邮箱链接登录</title>
+</head>
+<body>
+    <h2>正在登录...</h2>
+    <script>(async function(){
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        if (!token) {
+            alert('缺少token参数！');
+            window.location.href = '/login.html';
+            return;
+        }
+        const resp = await fetch('/verify_token_login', {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ token })
+        });
+        const result = await resp.json();
+        if(result.success && result.data) {
+            // 写入sessionStorage
+            sessionStorage.setItem('username', result.data.username);
+            sessionStorage.setItem('role', result.data.role);
+            sessionStorage.setItem('email', result.data.email);
+            window.location.href = result.data.role === "admin" ? "/admin_dashboard.html" : "/user_dashboard.html";
+        } else {
+            alert(result.message || '登录失败');
+            window.location.href = '/login.html';
+        }
+    })();</script>
+</body>
+</html>

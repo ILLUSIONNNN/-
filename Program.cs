@@ -653,6 +653,77 @@ app.MapPost("/review_registration", async (HttpContext context) =>
 
     return Results.Json(new { success = true, message = "操作成功！" });
 });
+// 假设用内存存token（生产建议redis等）
+Dictionary<string, (string email, DateTime expire)> loginTokens = new();
+
+app.MapPost("/send_login_link", async (HttpContext context) =>
+{
+    using var reader = new StreamReader(context.Request.Body);
+    var body = await reader.ReadToEndAsync();
+    var doc = JsonDocument.Parse(body);
+    if (!doc.RootElement.TryGetProperty("email", out var emailElem))
+        return Results.Json(new { success = false, message = "缺少邮箱！" });
+    string email = emailElem.GetString();
+
+    var users = LoadUsers();
+    var user = users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+    if (user == null)
+        return Results.Json(new { success = false, message = "该邮箱未注册！" });
+
+    // 生成token并保存
+    string token = Guid.NewGuid().ToString("N");
+    loginTokens[token] = (email, DateTime.Now.AddMinutes(10)); // 10分钟有效
+
+    // 构造URL
+    var host = context.Request.Host.Value;
+    var scheme = context.Request.Scheme;
+    string url = $"{scheme}://{host}/email_login.html?token={token}";
+
+    // 发送邮件
+    try
+    {
+        SendEmail(email, "您的登录链接", $"请点击下方链接登录（10分钟内有效）：\n{url}");
+    }
+    catch (Exception ex)
+    {
+        return Results.Json(new { success = false, message = "邮件发送失败：" + ex.Message });
+    }
+
+    return Results.Json(new { success = true, message = "登录链接已发送至邮箱，请查收。" });
+});
+app.MapPost("/verify_token_login", async (HttpContext context) =>
+{
+    using var reader = new StreamReader(context.Request.Body);
+    var body = await reader.ReadToEndAsync();
+    var doc = JsonDocument.Parse(body);
+    if (!doc.RootElement.TryGetProperty("token", out var tokenElem))
+        return Results.Json(new { success = false, message = "缺少token！" });
+    string token = tokenElem.GetString();
+
+    if (!loginTokens.ContainsKey(token) || loginTokens[token].expire < DateTime.Now)
+        return Results.Json(new { success = false, message = "token无效或已过期！" });
+
+    var email = loginTokens[token].email;
+    loginTokens.Remove(token);
+
+    // 查用户信息
+    var users = LoadUsers();
+    var user = users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+    if (user == null)
+        return Results.Json(new { success = false, message = "未找到该用户！" });
+
+    return Results.Json(new
+    {
+        success = true,
+        data = new
+        {
+            username = user.Username,
+            name = user.Name,
+            email = user.Email,
+            role = user.Role
+        }
+    });
+});
 app.MapFallbackToFile("index.html");
 app.Run();
 
